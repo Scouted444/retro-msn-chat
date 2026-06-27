@@ -3,7 +3,7 @@ const socket = io();
 let username = "";
 let currentChat = null;
 
-// LOGIN
+/* LOGIN */
 function login() {
   username = document.getElementById("usernameInput").value;
   if (!username) return;
@@ -16,7 +16,7 @@ function login() {
   document.getElementById("currentUser").innerText = username;
 }
 
-// FRIEND LIST
+/* FRIEND LIST */
 socket.on("users", (users) => {
   const box = document.querySelector(".friends");
   box.innerHTML = "<p class='section'>Friends</p>";
@@ -38,7 +38,7 @@ socket.on("users", (users) => {
   });
 });
 
-// SEND MESSAGE
+/* SEND MESSAGE */
 function sendMessage() {
   const text = document.getElementById("msgInput").value;
   if (!text || !currentChat) return;
@@ -53,12 +53,12 @@ function sendMessage() {
   document.getElementById("msgInput").value = "";
 }
 
-// RECEIVE MESSAGE
+/* RECEIVE MESSAGE */
 socket.on("private message", (data) => {
   addMessage(data.from + ": " + data.text, false);
 });
 
-// TYPING
+/* TYPING */
 document.getElementById("msgInput").addEventListener("input", () => {
   if (!currentChat) return;
 
@@ -75,7 +75,7 @@ socket.on("typing", (data) => {
   setTimeout(() => t.innerText = "", 1000);
 });
 
-// NUDGE
+/* NUDGE */
 function nudge() {
   if (!currentChat) return;
 
@@ -96,7 +96,7 @@ function shake() {
   setTimeout(() => document.body.classList.remove("shake"), 500);
 }
 
-// MESSAGE UI
+/* UI */
 function addMessage(text, me) {
   const msg = document.createElement("div");
   msg.className = "message" + (me ? " me" : "");
