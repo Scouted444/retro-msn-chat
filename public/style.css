@@ -79,8 +79,33 @@ body {
   padding: 8px;
 }
 
-.typing {
+.friend {
+  padding: 8px;
+  margin: 5px 0;
+  background: rgba(255,255,255,0.1);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.friend:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+#typing {
   font-size: 12px;
-  padding-left: 10px;
   color: gray;
+  padding-left: 10px;
+}
+
+/* NUDGE SHAKE */
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }
