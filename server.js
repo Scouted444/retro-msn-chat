@@ -5,15 +5,18 @@ const io = require("socket.io")(http);
 
 app.use(express.static("public"));
 
-const users = {}; // socket.id → username
+const users = {}; // socket.id -> username
 
 io.on("connection", (socket) => {
 
+  // LOGIN
   socket.on("login", (username) => {
     users[socket.id] = username;
-    io.emit("users", Object.values(users)); // send online list
+
+    io.emit("users", Object.values(users));
   });
 
+  // PRIVATE MESSAGE
   socket.on("private message", ({ to, from, text }) => {
     for (let id in users) {
       if (users[id] === to) {
@@ -22,6 +25,25 @@ io.on("connection", (socket) => {
     }
   });
 
+  // TYPING
+  socket.on("typing", ({ to, from }) => {
+    for (let id in users) {
+      if (users[id] === to) {
+        io.to(id).emit("typing", { from });
+      }
+    }
+  });
+
+  // NUDGE
+  socket.on("nudge", ({ to, from }) => {
+    for (let id in users) {
+      if (users[id] === to) {
+        io.to(id).emit("nudge", { from });
+      }
+    }
+  });
+
+  // DISCONNECT
   socket.on("disconnect", () => {
     delete users[socket.id];
     io.emit("users", Object.values(users));
@@ -29,4 +51,5 @@ io.on("connection", (socket) => {
 
 });
 
-http.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, () => console.log("Running on " + PORT));
