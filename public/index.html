@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Retro MSN Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="login">
+    <h1>MSN Messenger</h1>
+    <input id="usernameInput" placeholder="Enter username..." />
+    <button onclick="login()">Sign In</button>
+  </div>
+
+  <!-- CHAT APP -->
+  <div id="chatApp" class="hidden">
+
+    <div class="sidebar">
+      <div class="profile">
+        <p id="currentUser"></p>
+        <span class="status">● Online</span>
+      </div>
+
+      <div class="friends">
+        <p class="section">Friends</p>
+        <div class="friend active">🟢 Lobby</div>
+        <div class="friend">🟡 Coding</div>
+        <div class="friend">🔴 Offline</div>
+      </div>
+    </div>
+
+    <div class="chat">
+
+      <div class="chat-header">
+        Retro MSN Lobby
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="typing" id="typing"></div>
+
+      <div class="input-area">
+        <input id="msgInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
