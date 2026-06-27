@@ -5,18 +5,28 @@ const io = require("socket.io")(http);
 
 app.use(express.static("public"));
 
-io.on("connection", (socket) => {
-  console.log("User connected");
+const users = {}; // socket.id → username
 
-  socket.on("chat message", (data) => {
-    io.emit("chat message", data); // broadcast to everyone
+io.on("connection", (socket) => {
+
+  socket.on("login", (username) => {
+    users[socket.id] = username;
+    io.emit("users", Object.values(users)); // send online list
+  });
+
+  socket.on("private message", ({ to, from, text }) => {
+    for (let id in users) {
+      if (users[id] === to) {
+        io.to(id).emit("private message", { from, text });
+      }
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    delete users[socket.id];
+    io.emit("users", Object.values(users));
   });
+
 });
 
-http.listen(3000, () => {
-  console.log("MSN running on http://localhost:3000");
-});
+http.listen(process.env.PORT || 3000);
