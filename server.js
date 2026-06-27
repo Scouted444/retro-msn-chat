@@ -9,14 +9,11 @@ const users = {}; // socket.id -> username
 
 io.on("connection", (socket) => {
 
-  // LOGIN
   socket.on("login", (username) => {
     users[socket.id] = username;
-
     io.emit("users", Object.values(users));
   });
 
-  // PRIVATE MESSAGE
   socket.on("private message", ({ to, from, text }) => {
     for (let id in users) {
       if (users[id] === to) {
@@ -25,7 +22,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // TYPING
   socket.on("typing", ({ to, from }) => {
     for (let id in users) {
       if (users[id] === to) {
@@ -34,7 +30,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // NUDGE
   socket.on("nudge", ({ to, from }) => {
     for (let id in users) {
       if (users[id] === to) {
@@ -43,7 +38,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // DISCONNECT
   socket.on("disconnect", () => {
     delete users[socket.id];
     io.emit("users", Object.values(users));
