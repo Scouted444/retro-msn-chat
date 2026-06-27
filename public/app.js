@@ -1,58 +1,63 @@
 const socket = io();
 
 let username = "";
+let currentChat = null;
 
-/* LOGIN */
 function login() {
   username = document.getElementById("usernameInput").value;
-
   if (!username) return;
+
+  socket.emit("login", username);
 
   document.getElementById("loginScreen").classList.add("hidden");
   document.getElementById("chatApp").classList.remove("hidden");
-
   document.getElementById("currentUser").innerText = username;
 }
 
-/* SEND MESSAGE */
-function sendMessage() {
-  const input = document.getElementById("msgInput");
-  const text = input.value;
+// update friend list
+socket.on("users", (users) => {
+  const box = document.querySelector(".friends");
+  box.innerHTML = "<p class='section'>Friends</p>";
 
-  if (!text) return;
+  users.forEach(u => {
+    if (u === username) return;
 
-  socket.emit("chat message", {
-    user: username,
-    text: text
+    const div = document.createElement("div");
+    div.className = "friend";
+    div.innerText = "🟢 " + u;
+
+    div.onclick = () => {
+      currentChat = u;
+      document.querySelector(".chat-header").innerText = "Chat with " + u;
+      document.getElementById("messages").innerHTML = "";
+    };
+
+    box.appendChild(div);
   });
-
-  input.value = "";
-}
-
-/* RECEIVE MESSAGE */
-socket.on("chat message", (data) => {
-  addMessage(data.user + ": " + data.text, data.user === username);
 });
 
-/* RENDER MESSAGE */
-function addMessage(text, isMe) {
+function sendMessage() {
+  const text = document.getElementById("msgInput").value;
+  if (!text || !currentChat) return;
+
+  socket.emit("private message", {
+    to: currentChat,
+    from: username,
+    text
+  });
+
+  addMessage("You: " + text, true);
+  document.getElementById("msgInput").value = "";
+}
+
+socket.on("private message", (data) => {
+  addMessage(data.from + ": " + data.text, false);
+});
+
+function addMessage(text, me) {
   const msg = document.createElement("div");
-  msg.classList.add("message");
-
-  if (isMe) msg.classList.add("me");
-
+  msg.className = "message" + (me ? " me" : "");
   msg.innerText = text;
 
   document.getElementById("messages").appendChild(msg);
-
-  // auto scroll
-  const box = document.getElementById("messages");
-  box.scrollTop = box.scrollHeight;
 }
-
-/* ENTER KEY SUPPORT */
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && document.activeElement.id === "msgInput") {
-    sendMessage();
-  }
-});
